@@ -46,4 +46,16 @@ services:
       oracle-db:
         condition: service_healthy
 
-        
+  usuarios-service:
+    build:
+      context: ../../proyecto-microservicio-usuarios-backend/microservicio-usuarios-backend
+    container_name: usuarios-service
+    ports:
+      - "8084:8084"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:oracle:thin:@oracle-db:1521/XEPDB1
+      SPRING_DATASOURCE_USERNAME: APP_ADMIN
+      SPRING_DATASOURCE_PASSWORD: 1234
+    depends_on:
+      oracle-db:
+        condition: service_healthy
