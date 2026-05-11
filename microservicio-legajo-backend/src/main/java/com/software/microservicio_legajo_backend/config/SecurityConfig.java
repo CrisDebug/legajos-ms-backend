@@ -9,6 +9,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -42,6 +48,10 @@ public class SecurityConfig {
 
                 // ❌ desactivar basic auth (si no, Spring puede pedir credenciales)
                 .httpBasic(basic -> basic.disable())
+                
+                
+                //cors security
+                        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
                 // 🛡️ reglas de acceso
                 .authorizeHttpRequests(auth -> auth
@@ -50,15 +60,30 @@ public class SecurityConfig {
                         .requestMatchers("/api/public/**").permitAll()
 
                         // 🔐 proteger endpoints de legajos
-                        .requestMatchers("/legajos/**").authenticated()
+                        .requestMatchers("/api/legajos/**").authenticated()
 
                         // 🔒 cualquier otro endpoint también requiere token
                         .anyRequest().authenticated()
+                        
                 )
 
                 // 🔥 registrar el filtro JWT antes del filtro default de Spring
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 
                 .build();
+    }
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.setAllowedOriginPatterns(List.of("*")); // Angular
+        configuration.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(false);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
     }
 }

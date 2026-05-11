@@ -13,17 +13,17 @@ public class CasilleroClient {
     }
 
     public boolean existeCasillero(Long id) {
-        try {
-            webClient.get()
-                    .uri("/casilleros/{id}", id)
-                    .retrieve()
-                    .toBodilessEntity()
-                    .block();
+    try {
+        webClient.get()
+                .uri("/api/casilleros/{id}", id)
+                .retrieve()
+                .toBodilessEntity()
+                .block();
 
-            return true;
+        return true;
 
-        } catch (Exception e) {
-            return false;
-        }
+    } catch (Exception e) {
+        return false;
     }
+}
 }
